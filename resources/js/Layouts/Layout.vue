@@ -1,22 +1,22 @@
 <script setup>
-
 import Header from "@/Layouts/Header.vue";
-import Nav  from "@/Layouts/Nav.vue";
+import Nav from "@/Layouts/Nav.vue";
 import Footer from "@/Layouts/Footer.vue";
 
 const emit = defineEmits(['open-modal']);
-
 </script>
 
 <template>
-  <Header @open-modal="emit('open-modal')"/>
-  <Nav/>
-  <Main class="h-main bg- main">
-    <slot></slot>
-  </Main>
-  <Footer/>
+  <div class="min-h-screen flex flex-col bg-orange-50 text-gray-700" data-theme="cupcake">
+
+    <Header @open-modal="emit('open-modal')"/>
+
+    <Nav/>
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+      <slot></slot>
+    </main>
+
+    <Footer/>
+  </div>
 </template>
-
-<style scoped>
-
-</style>

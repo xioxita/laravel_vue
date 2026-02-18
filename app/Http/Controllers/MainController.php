@@ -2,44 +2,42 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
 
 class MainController extends Controller
 {
     public function index()
     {
-        // 1. Aquí defines tu array de datos (simulando una base de datos)
+        // Definimos las "funcionalidades" (Cards) que verá el usuario logueado
         $cards = [
             [
-                'title' => 'Profesores',
-                'description' => 'Gestión de la plantilla docente.',
-                'img' => 'https://img.daisyui.com/images/stock/photo-1559181567-c3190ca9959b.webp',
-                'buttonText' => 'Acceder'
+                'title' => 'Terror',
+                'description' => 'Pasa miedo con nuestra colección.',
+                'img' => 'https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&w=500&q=80',
+                // Aquí generamos la ruta con el parámetro para filtrar
+                'action' => route('books.index', ['genre' => 'Terror'])
             ],
             [
-                'title' => 'Alumnos',
-                'description' => 'Listado y matriculación de estudiantes.',
-                'img' => 'https://img.daisyui.com/images/stock/photo-1507358522600-9f71e620c44e.webp',
-                'buttonText' => 'Acceder'
+                'title' => 'Romance',
+                'description' => 'Historias de amor apasionantes.',
+                'img' => 'https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?auto=format&fit=crop&w=500&q=80',
+                'action' => route('books.index', ['genre' => 'Romance'])
             ],
             [
-                'title' => 'Usuarios',
-                'description' => 'Listado de usuarios.',
-                'img' => 'https://img.daisyui.com/images/stock/photo-1507358522600-9f71e620c44e.webp',
-                'buttonText' => 'Acceder'
+                'title' => 'Ciencia Ficción',
+                'description' => 'Viaja a otros mundos.',
+                'img' => 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=500&q=80',
+                'action' => route('books.index', ['genre' => 'Ciencia Ficción'])
             ],
             [
-                'title' => 'Proyectos',
-                'description' => 'Listado de proyectos',
-                'img' => 'https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp',
-                'buttonText' => 'Acceder'
+                'title' => 'Fantasía',
+                'description' => 'Magia, espadas y brujería.',
+                'img' => 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=500&q=80',
+                'action' => route('books.index', ['genre' => 'Fantasía'])
             ],
-
         ];
 
-        // 2. Enviamos los datos a la vista 'Main' usando Inertia
-        // La clave 'cards' será el nombre de la prop en Vue
         return Inertia::render('Main', [
             'cards' => $cards
         ]);

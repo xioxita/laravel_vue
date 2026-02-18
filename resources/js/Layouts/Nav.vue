@@ -1,18 +1,26 @@
 <script setup>
+import { Link, usePage } from "@inertiajs/vue3";
+import { computed } from 'vue';
 
-import {Link} from "@inertiajs/vue3";
+const page = usePage();
+const isAdmin = computed(() => page.props.auth.user?.role === 'admin');
 </script>
 
 <template>
-  <nav class="h-nav bg-nav flex flex-row w-full justify-between px-5 items-center space-x-4 px-4">
-    <div>
-      <Link href=""><button class="btn btn-primar ">Acceso</button></Link>
-      <Link href=""><button class="btn btn-primar ">Registar</button></Link>
+  <nav class="bg-white/80 backdrop-blur-md border-b border-rose-100 sticky top-0 z-50">
+    <div class="container mx-auto px-4">
+      <div class="flex h-12 items-center justify-between">
+        <div>
+          <Link
+              v-if="isAdmin"
+              :href="route('admin.dashboard')"
+              class="btn btn-secondary btn-xs sm:btn-sm text-white font-bold rounded-full shadow-sm"
+          >
+            Panel Admin
+          </Link>
+        </div>
+
+      </div>
     </div>
   </nav>
-
 </template>
-
-<style scoped>
-
-</style>

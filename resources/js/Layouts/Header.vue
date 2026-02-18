@@ -1,35 +1,39 @@
 <script setup>
 import { computed } from 'vue';
 import { Link, usePage } from "@inertiajs/vue3";
-import {defineEmits} from 'vue';
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
-
 const emit = defineEmits(['open-modal']);
 </script>
 
 <template>
-  <header class="h-20 bg-gray-200 flex justify-between px-5 items-center">
+  <header class="navbar bg-rose-100 border-b border-rose-200 px-4 sm:px-8 shadow-sm">
 
-    <img src="/img/logo.png" alt="logo" class="max-h-full p-2">
-
-    <h1 class="text-4xl text-blue-900">"GESTION DEL INSTITUTO"</h1>
-
-    <div v-if="user" class="flex items-center gap-4">
-      <p class="text-black">hola {{ user.name }}</p>
-      <Link href="logout" method="post" as="button" class="text-red-500 font-bold">
-        Logout
+    <div class="flex-1 gap-4">
+      <Link :href="route('main')" class="btn btn-ghost normal-case text-xl sm:text-2xl font-bold text-rose-600 tracking-wide hover:bg-rose-200">
+        GESTIÓN DEL INSTITUTO
       </Link>
     </div>
 
-    <div v-else class="space-x-2">
-      <button @click="emit('open-modal')" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
-        Login
-      </button>
-      <Link href="register" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition" as="button">
-        Register
-      </Link>
+    <div class="flex-none gap-4">
+      <div v-if="user" class="flex items-center gap-4">
+        <span class="text-sm font-semibold text-gray-600 hidden sm:inline">
+            Hola, <span class="text-rose-500 font-bold">{{ user.name }}</span>
+        </span>
+        <Link :href="route('logout')" method="post" as="button" class="btn btn-outline btn-error btn-sm rounded-full">
+          Salir
+        </Link>
+      </div>
+
+      <div v-else class="flex gap-2">
+        <button @click="emit('open-modal')" class="btn  btn-sm bg-rose-400 hover:bg-rose-500 text-white border-none font-bold rounded-full shadow-lg">
+          Acceso
+        </button>
+        <Link :href="route('register')" class="btn btn-ghost btn-sm hover:bg-rose-200 rounded-full text-rose-700">
+          Registro
+        </Link>
+      </div>
     </div>
   </header>
 </template>

@@ -1,6 +1,6 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
-import { computed, watch } from 'vue';
+import { computed, watch, ref } from 'vue'; // Añadimos ref
 
 const props = defineProps({
   show: Boolean,
@@ -16,6 +16,9 @@ const form = useForm({
   rating: 0
 });
 
+// Nuevo estado para controlar si mostramos la advertencia de borrado
+const showConfirmDelete = ref(false);
+
 const myExistingReview = computed(() => {
   if (!props.book || !props.user) return null;
   return props.book.reviews.find(r => r.user_id === props.user.id);
@@ -24,6 +27,7 @@ const myExistingReview = computed(() => {
 watch(() => props.book, (newBook) => {
   if (newBook) {
     form.book_id = newBook.id;
+    showConfirmDelete.value = false; // Reseteamos la advertencia al cambiar de libro
     if (myExistingReview.value) {
       form.comment = myExistingReview.value.comment;
       form.rating = myExistingReview.value.rating;
@@ -38,10 +42,14 @@ const submitReview = () => {
   form.post(route('reviews.store'), { preserveScroll: true });
 };
 
-const deleteReview = () => {
-  if(confirm('¿Seguro que quieres borrar tu reseña?')) {
-    form.delete(route('reviews.destroy', myExistingReview.value.id), { preserveScroll: true });
-  }
+// Nueva función que ejecuta el borrado real
+const executeDelete = () => {
+  form.delete(route('reviews.destroy', myExistingReview.value.id), {
+    preserveScroll: true,
+    onSuccess: () => {
+      showConfirmDelete.value = false; // Ocultamos la advertencia tras borrar
+    }
+  });
 };
 </script>
 
@@ -81,42 +89,57 @@ const deleteReview = () => {
         </table>
       </div>
 
-      <div v-if="user" class="bg-white p-6 rounded-xl border border-rose-100 shadow-sm">
-        <h4 class="text-lg font-bold mb-4 text-rose-500">
-          {{ myExistingReview ? 'Edita tu Reseña' : 'Deja tu opinión' }}
-        </h4>
+      <div v-if="user">
 
-        <form @submit.prevent="submitReview">
-          <div class="rating mb-4">
-            <input type="radio" v-model="form.rating" :value="1" class="mask mask-star-2 bg-orange-300" />
-            <input type="radio" v-model="form.rating" :value="2" class="mask mask-star-2 bg-orange-300" />
-            <input type="radio" v-model="form.rating" :value="3" class="mask mask-star-2 bg-orange-300" />
-            <input type="radio" v-model="form.rating" :value="4" class="mask mask-star-2 bg-orange-300" />
-            <input type="radio" v-model="form.rating" :value="5" class="mask mask-star-2 bg-orange-300" />
-          </div>
-
-          <textarea
-              v-model="form.comment"
-              class="textarea textarea-bordered w-full bg-white text-gray-800 mb-4 border-rose-200 focus:border-rose-400 focus:ring-rose-200"
-              placeholder="¿Qué te pareció el libro?"
-              required
-          ></textarea>
-
-          <div class="flex justify-between items-center">
-            <button type="submit" class="btn bg-rose-400 hover:bg-rose-500 text-white border-none" :disabled="form.processing">
-              {{ myExistingReview ? 'Actualizar Reseña' : 'Publicar Reseña' }}
-            </button>
-
-            <button
-                v-if="myExistingReview"
-                type="button"
-                @click="deleteReview"
-                class="btn btn-outline btn-error btn-sm"
-            >
-              Borrar
+        <div v-if="showConfirmDelete" class="bg-rose-50 p-6 rounded-xl border border-rose-200 text-center shadow-inner">
+          <h4 class="text-xl font-bold text-rose-600 mb-2">¿Estás seguro?</h4>
+          <p class="text-gray-600 mb-6">Esta acción no se puede deshacer. Tu reseña será eliminada permanentemente de este libro.</p>
+          <div class="flex justify-center gap-4">
+            <button @click="showConfirmDelete = false" type="button" class="btn btn-ghost text-gray-500 hover:bg-rose-100">Cancelar</button>
+            <button @click="executeDelete" type="button" class="btn bg-rose-500 hover:bg-rose-600 text-white border-none" :disabled="form.processing">
+              Sí, borrar reseña
             </button>
           </div>
-        </form>
+        </div>
+
+        <div v-else class="bg-white p-6 rounded-xl border border-rose-100 shadow-sm">
+          <h4 class="text-lg font-bold mb-4 text-rose-500">
+            {{ myExistingReview ? 'Edita tu Reseña' : 'Deja tu opinión' }}
+          </h4>
+
+          <form @submit.prevent="submitReview">
+            <div class="rating mb-4">
+              <input type="radio" v-model="form.rating" :value="1" class="mask mask-star-2 bg-orange-300" />
+              <input type="radio" v-model="form.rating" :value="2" class="mask mask-star-2 bg-orange-300" />
+              <input type="radio" v-model="form.rating" :value="3" class="mask mask-star-2 bg-orange-300" />
+              <input type="radio" v-model="form.rating" :value="4" class="mask mask-star-2 bg-orange-300" />
+              <input type="radio" v-model="form.rating" :value="5" class="mask mask-star-2 bg-orange-300" />
+            </div>
+
+            <textarea
+                v-model="form.comment"
+                class="textarea textarea-bordered w-full bg-white text-gray-800 mb-4 border-rose-200 focus:border-rose-400 focus:ring-rose-200"
+                placeholder="¿Qué te pareció el libro?"
+                required
+            ></textarea>
+
+            <div class="flex justify-between items-center">
+              <button type="submit" class="btn bg-rose-400 hover:bg-rose-500 text-white border-none" :disabled="form.processing">
+                {{ myExistingReview ? 'Actualizar Reseña' : 'Publicar Reseña' }}
+              </button>
+
+              <button
+                  v-if="myExistingReview"
+                  type="button"
+                  @click="showConfirmDelete = true"
+                  class="btn btn-outline btn-error btn-sm"
+              >
+                Borrar
+              </button>
+            </div>
+          </form>
+        </div>
+
       </div>
 
       <div v-else class="text-center p-4 bg-rose-50 rounded-lg text-gray-500">

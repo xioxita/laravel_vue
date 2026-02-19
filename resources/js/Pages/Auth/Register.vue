@@ -1,113 +1,73 @@
 <script setup>
-import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { useForm } from '@inertiajs/vue3';
+const emit = defineEmits(['close']);
+defineProps({ status: String });
 
 const form = useForm({
-    name: '',
-    email: '',
-    password: '',
-    password_confirmation: '',
+  name: '',
+  email: '',
+  password: '',
+  password_confirmation: '',
 });
 
 const submit = () => {
-    form.post(route('register'), {
-        onFinish: () => form.reset('password', 'password_confirmation'),
-    });
+  form.post(route('register'), {
+    onFinish: () => form.reset('password'),
+    onSuccess: () => emit('close'),
+  });
 };
 </script>
 
 <template>
-    <GuestLayout>
-        <Head title="Register" />
+  <div class="w-full">
+    <h3 class="font-bold text-2xl text-center mb-6 text-rose-500">Registro de usuario</h3>
 
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="name" value="Name" />
+    <div v-if="status" class="mb-4 text-sm font-medium text-green-600 text-center">
+      {{ status }}
+    </div>
 
-                <TextInput
-                    id="name"
-                    type="text"
-                    class="mt-1 block w-full"
-                    v-model="form.name"
-                    required
-                    autofocus
-                    autocomplete="name"
-                />
+    <form @submit.prevent="submit" class="flex flex-col gap-4">
 
-                <InputError class="mt-2" :message="form.errors.name" />
-            </div>
+      <div class="form-control">
+        <label class="label"><span class="label-text font-semibold text-gray-700">Nombre</span></label>
+        <input type="name" placeholder="tu nombre" class="input input-bordered w-full bg-orange-50 border-rose-200 text-gray-900 focus:border-rose-400 focus:ring-rose-400" v-model="form.name" required autofocus />
+        <span v-if="form.errors.name" class="text-error text-xs mt-1">{{ form.errors.name}}</span>
+      </div>
 
-            <div class="mt-4">
-                <InputLabel for="email" value="Email" />
+      <div class="form-control">
+        <label class="label"><span class="label-text font-semibold text-gray-700">Correo Electrónico</span></label>
+        <input type="email" placeholder="email@ejemplo.com" class="input input-bordered w-full bg-orange-50 border-rose-200 text-gray-900 focus:border-rose-400 focus:ring-rose-400" v-model="form.email" required autofocus />
+        <span v-if="form.errors.email" class="text-error text-xs mt-1">{{ form.errors.email }}</span>
+      </div>
 
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autocomplete="username"
-                />
+      <div class="form-control">
+        <label class="label"><span class="label-text font-semibold text-gray-700">Contraseña</span></label>
+        <input type="password" placeholder="••••••••" class="input input-bordered w-full bg-orange-50 border-rose-200 text-gray-900 focus:border-rose-400" v-model="form.password" required />
+        <span v-if="form.errors.password" class="text-error text-xs mt-1">{{ form.errors.password }}</span>
+      </div>
 
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
+      <div class="form-control">
+        <label class="label"><span class="label-text font-semibold text-gray-700">Confirme contraseña</span></label>
+        <input type="password" placeholder="••••••••" class="input input-bordered w-full bg-orange-50 border-rose-200 text-gray-900 focus:border-rose-400" v-model="form.password_confirmation" required />
+        <span v-if="form.errors.password_confirmation" class="text-error text-xs mt-1">{{ form.errors.password_confirmation }}</span>
+      </div>
 
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
+      <div class="form-control">
+        <label class="label cursor-pointer justify-start gap-2">
+          <input type="checkbox" class="checkbox checkbox-primary checkbox-sm border-rose-300 checked:bg-rose-500" v-model="form.remember" />
+          <span class="label-text text-gray-600">Recordarme</span>
+        </label>
+      </div>
 
-                <TextInput
-                    id="password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password"
-                    required
-                    autocomplete="new-password"
-                />
+      <div class="form-control mt-4">
+        <button class="btn bg-rose-400 hover:bg-rose-500 text-white border-none w-full text-lg rounded-full" :class="{ 'loading': form.processing }" :disabled="form.processing">
+          Entrar
+        </button>
+      </div>
 
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel
-                    for="password_confirmation"
-                    value="Confirm Password"
-                />
-
-                <TextInput
-                    id="password_confirmation"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password_confirmation"
-                    required
-                    autocomplete="new-password"
-                />
-
-                <InputError
-                    class="mt-2"
-                    :message="form.errors.password_confirmation"
-                />
-            </div>
-
-            <div class="mt-4 flex items-center justify-end">
-                <Link
-                    :href="route('login')"
-                    class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:text-gray-100 dark:focus:ring-offset-gray-800"
-                >
-                    Already registered?
-                </Link>
-
-                <PrimaryButton
-                    class="ms-4"
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
-                    Register
-                </PrimaryButton>
-            </div>
-        </form>
-    </GuestLayout>
+      <button type="button" class="btn btn-ghost btn-sm text-gray-500 mt-2 hover:bg-rose-50" @click="emit('close')">
+        Cancelar y volver
+      </button>
+    </form>
+  </div>
 </template>

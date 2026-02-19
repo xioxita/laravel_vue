@@ -35,7 +35,7 @@ onUnmounted(() => {
   <Teleport to="body">
     <div
         v-if="show"
-        class="modal modal-open z-[9999] bg-black/60"
+        class="modal modal-open z-[9999] "
         @click.self="$emit('close')"
     >
       <div class="modal-box relative bg-white text-gray-900 shadow-2xl">

@@ -10,7 +10,7 @@ defineProps({
 </script>
 
 <template>
-  <div class="card bg-white/80 backdrop-blur-md border border-rose-200 shadow-xl hover:shadow-rose-300/50 hover:scale-105 transition-all duration-300 h-full flex flex-col overflow-hidden group">
+  <div class="card bg-white border border-gray-100 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 h-full flex flex-col overflow-hidden group">
 
     <figure class="relative h-48 overflow-hidden">
       <img
@@ -25,7 +25,7 @@ defineProps({
       <p class="text-gray-600 text-sm line-clamp-2">{{ description }}</p>
 
       <div class="card-actions mt-auto w-full justify-center pt-4">
-        <Link :href="action" class="btn bg-rose-400 hover:bg-rose-500 text-white border-none w-full shadow-md shadow-rose-200">
+        <Link :href="action" class="btn bg-rose-400 hover:bg-rose-500 text-white border-none w-full">
           Ver Libros
         </Link>
       </div>

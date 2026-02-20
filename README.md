@@ -1,62 +1,48 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📚 BookReview - Plataforma de Reseñas de Libros
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+He desarrollado BookReview como una plataforma web orientada a los entusiastas de la lectura. El sistema permite a los usuarios explorar un catálogo de obras clasificadas por géneros, consultar las opiniones de otros lectores y publicar reseñas propias con valoraciones de 1 a 5 estrellas. Adicionalmente, he integrado un panel de administración para la monitorización y visualización de estadísticas globales de la plataforma.
 
-## About Laravel
+El proyecto está construido sobre el stack **VILT**: **V**ue 3 (Composition API), **I**nertia.js, **L**aravel 11 y **T**ailwind CSS (con componentes de DaisyUI).
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Arquitectura de Base de Datos y Seeding
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+He estructurado el modelo de datos relacional en tres entidades principales:
+1. **Users:** Gestiona la autenticación del sistema. Incluye un atributo `role` para diferenciar entre el acceso de administración (`admin`) y el de los lectores (`user`).
+2. **Books:** Almacena la información de las obras (título, autor, género, descripción y URL de la portada).
+3. **Reviews:** Actúa como tabla transaccional vinculando a los usuarios con los libros, registrando la puntuación numérica y el comentario en formato de texto.
 
-## Learning Laravel
+**Estrategia de inicialización de datos (Seeding):**
+Para garantizar una presentación realista de la interfaz desde el primer despliegue, he prescindido de generadores de texto genérico (*Lorem Ipsum*) para el catálogo. En su lugar, configuré el `DatabaseSeeder.php` para inyectar un array estructurado con libros reales y portadas extraídas de Unsplash. Para la generación de usuarios adicionales y reseñas, sí empleé `Factories`, lo que me permitió disponer de un entorno de pruebas con valoraciones medias operativas de forma inmediata.
+El sistema genera por defecto la credencial de administración: `admin@admin.com` / `password`.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+##  Estructura del Código y Lógica de Negocio
 
-## Laravel Sponsors
+### Backend (Laravel)
+* **`BookController.php`:** Centraliza las operaciones principales. Además de gestionar el filtrado de libros por género, he integrado en este controlador el CRUD de las reseñas.
+  * Implementé el método `updateOrCreate` de Eloquent, optimizando el código para que un mismo flujo maneje tanto la creación como la actualización de una reseña.
+  * Para la eliminación (`destroyReview`), establecí una validación estricta que verifica que el usuario autenticado coincida con el autor del registro antes de proceder con el borrado en la base de datos.
+* **`DashboardController.php`:** Procesa las métricas destinadas al panel de control (volumen de usuarios, cantidad de libros, promedio global de valoraciones y el ranking de las 5 obras mejor valoradas).
+* **Rutas (`web.php`):** Apliqué una segregación de accesos. La ruta raíz es pública, mientras que las operaciones de consulta de libros, manipulación de reseñas y acceso al panel de administración están protegidas mediante el middleware `auth`, garantizando la seguridad del sistema frente a accesos no autorizados mediante URL.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Frontend (Vue 3 + Inertia)
+* **Páginas Principales:**
+  * `Main.vue`: Landing page con renderizado condicional. Presenta un *hero section* a pantalla completa para invitados y despliega el grid de categorías para usuarios autenticados.
+  * `Books/Index.vue`: Interfaz del catálogo que renderiza las tarjetas de los libros y gestiona la apertura del modal de interacción.
+  * `Admin/Dashboard.vue`: Entorno protegido que renderiza las estadísticas del sistema.
+* **Componentes Destacados:**
+  * `ReviewModal.vue`: Componente de alta complejidad que gestiona la lectura asíncrona de comentarios y renderiza de forma reactiva el formulario de valoración.
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Resoluciones Técnicas Implementadas
 
-## Contributing
+### 1. Estado Global de Modales (`provide` / `inject`)
+Durante el desarrollo, detecté que instanciar los modales de autenticación exclusivamente en la vista principal rompía la funcionalidad de la barra de navegación en rutas secundarias. Resolví este problema arquitectónico migrando los modales al componente raíz (`Layout.vue`). Mediante la API de composición, el layout expone (`provide`) los métodos de apertura, permitiendo que cualquier componente hijo del árbol de vistas los consuma (`inject`) de forma centralizada y sin duplicidad de código.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 2. Reactividad en el Ecosistema SPA (`watch`)
+Dado el comportamiento de Inertia.js, la aplicación no recarga el navegador al procesar mutaciones en la base de datos. Para asegurar que el modal reflejara las nuevas reseñas de forma instantánea, implementé un observador (`watch`) profundo sobre el objeto de libros. Al detectar que Laravel retorna un nuevo estado tras publicar una reseña, el componente actualiza dinámicamente el libro seleccionado en el DOM sin interrumpir la experiencia de usuario.
 
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# laravel_vue
-# laravel_vue
-# laravel_vue

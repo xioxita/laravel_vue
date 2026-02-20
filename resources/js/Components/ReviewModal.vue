@@ -1,6 +1,7 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
-import { computed, watch, ref } from 'vue'; // Añadimos ref
+import { computed, watch, ref } from 'vue';
+
 
 const props = defineProps({
   show: Boolean,
@@ -8,7 +9,9 @@ const props = defineProps({
   user: Object
 });
 
+
 const emit = defineEmits(['close']);
+
 
 const form = useForm({
   book_id: null,
@@ -16,38 +19,49 @@ const form = useForm({
   rating: 0
 });
 
-// Nuevo estado para controlar si mostramos la advertencia de borrado
+
 const showConfirmDelete = ref(false);
 
+// busca si el usuario ya tiene una reseña en este libro
 const myExistingReview = computed(() => {
   if (!props.book || !props.user) return null;
+  // devuelve la reseña cuyo id usuario coincida con el id del usuario logueado
   return props.book.reviews.find(r => r.user_id === props.user.id);
 });
 
+// se activa cada vez que el libro seleccionado cambia
 watch(() => props.book, (newBook) => {
   if (newBook) {
     form.book_id = newBook.id;
-    showConfirmDelete.value = false; // Reseteamos la advertencia al cambiar de libro
+    showConfirmDelete.value = false;
+
+    // si ya existe una reseña previa se rellea el formulario para editarla
     if (myExistingReview.value) {
       form.comment = myExistingReview.value.comment;
       form.rating = myExistingReview.value.rating;
     } else {
+      // si no se resetea los campos para una nueva reseña
       form.comment = '';
       form.rating = 0;
     }
   }
 });
 
+
 const submitReview = () => {
-  form.post(route('reviews.store'), { preserveScroll: true });
+  // Enviamos la petición POST al controlador de Laravel
+  form.post(route('reviews.store'), {
+    preserveScroll: true // Evita que la página salte al recargar los datos
+  });
 };
 
-// Nueva función que ejecuta el borrado real
+
 const executeDelete = () => {
+  // Enviamos petición DELETE al servidor usando el ID de la reseña existente
   form.delete(route('reviews.destroy', myExistingReview.value.id), {
     preserveScroll: true,
     onSuccess: () => {
-      showConfirmDelete.value = false; // Ocultamos la advertencia tras borrar
+      showConfirmDelete.value = false;
     }
   });
 };
@@ -93,12 +107,10 @@ const executeDelete = () => {
 
         <div v-if="showConfirmDelete" class="bg-rose-50 p-6 rounded-xl border border-rose-200 text-center shadow-inner">
           <h4 class="text-xl font-bold text-rose-600 mb-2">¿Estás seguro?</h4>
-          <p class="text-gray-600 mb-6">Esta acción no se puede deshacer. Tu reseña será eliminada permanentemente de este libro.</p>
+          <p class="text-gray-600 mb-6">Esta acción no se puede deshacer.</p>
           <div class="flex justify-center gap-4">
-            <button @click="showConfirmDelete = false" type="button" class="btn btn-ghost text-gray-500 hover:bg-rose-100">Cancelar</button>
-            <button @click="executeDelete" type="button" class="btn bg-rose-500 hover:bg-rose-600 text-white border-none" :disabled="form.processing">
-              Sí, borrar reseña
-            </button>
+            <button @click="showConfirmDelete = false" type="button" class="btn btn-ghost text-gray-500">Cancelar</button>
+            <button @click="executeDelete" type="button" class="btn bg-rose-500 text-white">Sí, borrar reseña</button>
           </div>
         </div>
 
@@ -118,13 +130,13 @@ const executeDelete = () => {
 
             <textarea
                 v-model="form.comment"
-                class="textarea textarea-bordered w-full bg-white text-gray-800 mb-4 border-rose-200 focus:border-rose-400 focus:ring-rose-200"
+                class="textarea textarea-bordered w-full bg-white text-gray-800 mb-4 border-rose-200"
                 placeholder="¿Qué te pareció el libro?"
                 required
             ></textarea>
 
             <div class="flex justify-between items-center">
-              <button type="submit" class="btn bg-rose-400 hover:bg-rose-500 text-white border-none" :disabled="form.processing">
+              <button type="submit" class="btn bg-rose-400 text-white border-none" :disabled="form.processing">
                 {{ myExistingReview ? 'Actualizar Reseña' : 'Publicar Reseña' }}
               </button>
 

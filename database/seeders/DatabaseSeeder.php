@@ -10,16 +10,15 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Tu usuario Admin (sin reseñas al principio)
-        $admin = \App\Models\User::factory()->create([
+        $admin = User::factory()->create([
             'name' => 'Admin User',
             'email' => 'admin@admin.com',
             'password' => bcrypt('password'),
             'role' => 'admin',
         ]);
 
-        // 2. Crear 20 Usuarios "Random" para que escriban reseñas
-        $randomUsers = \App\Models\User::factory(20)->create();
+        // 20 Usuarios rndom para que escriban reseñas
+        $randomUsers = User::factory(20)->create();
 
         $library = [
             // --- TERROR ---
@@ -172,7 +171,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($library as $bookData) {
-            $book = \App\Models\Book::create([
+            $book = Book::create([
                 'title' => $bookData['title'],
                 'author' => $bookData['author'],
                 'genre' => $bookData['genre'],
@@ -181,8 +180,6 @@ class DatabaseSeeder extends Seeder
                 'rating' => rand(3, 5),
             ]);
 
-            // 4. Generar reseñas FALSAS para este libro
-            // Elegimos entre 3 y 8 usuarios al azar para comentar este libro
             $reviewers = $randomUsers->random(rand(3, 8));
 
             foreach ($reviewers as $reviewer) {

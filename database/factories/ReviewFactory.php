@@ -17,8 +17,8 @@ class ReviewFactory extends Factory
     public function definition(): array
     {
         return [
-            'comment' => fake()->paragraph(2), // Texto inventado
-            'rating' => fake()->numberBetween(1, 5), // Estrellas entre 1 y 5
+            'comment' => fake()->paragraph(2),
+            'rating' => fake()->numberBetween(1, 5),
         ];
     }
 }

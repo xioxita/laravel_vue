@@ -5,7 +5,7 @@ import { Link, usePage } from "@inertiajs/vue3";
 const page = usePage();
 const user = computed(() => page.props.auth.user);
 
-// Declaramos las dos señales diferentes
+
 const emit = defineEmits(['open-login', 'open-register']);
 </script>
 

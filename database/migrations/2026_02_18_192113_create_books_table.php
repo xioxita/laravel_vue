@@ -10,7 +10,6 @@ return new class extends Migration
      * Run the migrations.
      */public function up(): void
     {
-        // ¡AQUÍ ESTABA EL ERROR! Seguramente ponía 'users'
         Schema::create('books', function (Blueprint $table) {
             $table->id();
             $table->string('title');

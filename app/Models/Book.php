@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Book extends Model
 {
+    //un libro puede tener muchas reseñas
     public function reviews() {
         return $this->hasMany(Review::class);
     }

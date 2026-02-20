@@ -9,13 +9,11 @@ class MainController extends Controller
 {
     public function index()
     {
-        // Definimos las "funcionalidades" (Cards) que verá el usuario logueado
         $cards = [
             [
                 'title' => 'Terror',
                 'description' => 'Pasa miedo con nuestra colección.',
                 'img' => 'https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&w=500&q=80',
-                // Aquí generamos la ruta con el parámetro para filtrar
                 'action' => route('books.index', ['genre' => 'Terror'])
             ],
             [

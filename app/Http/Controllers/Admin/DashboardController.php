@@ -13,7 +13,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Seguridad simple: Si no es admin, lo echamos al inicio
+
         if (Auth::user()->role !== 'admin') {
             return redirect()->route('main');
         }
@@ -24,7 +24,7 @@ class DashboardController extends Controller
                 'total_users' => User::count(),
                 'total_books' => Book::count(),
                 'total_reviews' => Review::count(),
-                'avg_rating' => round(Review::avg('rating'), 1), // Promedio global
+                'avg_rating' => round(Review::avg('rating'), 1),
             ],
 
             // 2. Top 5 Libros mejor valorados
@@ -32,7 +32,7 @@ class DashboardController extends Controller
                 ->take(5)
                 ->get(['id', 'title', 'cover_image', 'rating']),
 
-            // 3. Últimas 5 reseñas escritas (con el usuario que la escribió)
+            // 3. Últimas 5 reseñas escritas
             'latest_reviews' => Review::with(['user', 'book'])
                 ->latest()
                 ->take(5)

@@ -3,7 +3,7 @@ import Layout from "@/Layouts/Layout.vue";
 import { usePage } from "@inertiajs/vue3";
 import { computed, ref } from "vue";
 import Login from '@/Pages/Auth/Login.vue';
-import Register from '@/Pages/Auth/Register.vue'; // IMPORTANTE: No olvidar importar Register
+import Register from '@/Pages/Auth/Register.vue';
 import Modal from '@/Components/Modal.vue';
 import Card from "@/Components/Card.vue";
 

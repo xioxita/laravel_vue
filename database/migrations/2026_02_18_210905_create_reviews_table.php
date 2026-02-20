@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // El usuario que comenta
-            $table->foreignId('book_id')->constrained()->onDelete('cascade'); // El libro comentado
-            $table->text('comment'); // El texto de la reseña
-            $table->integer('rating'); // Las estrellas (1-5)
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('book_id')->constrained()->onDelete('cascade');
+            $table->text('comment');
+            $table->integer('rating');
             $table->timestamps();
         });
     }

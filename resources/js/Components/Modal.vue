@@ -10,7 +10,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close']);
 
-// Bloquear el scroll del fondo cuando el modal está abierto
+// bloquear el scroll del fondo cuando el modal está abierto
 watch(
     () => props.show,
     (show) => {

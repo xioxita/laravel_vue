@@ -3,7 +3,7 @@ import Header from "@/Layouts/Header.vue";
 import Nav from "@/Layouts/Nav.vue";
 import Footer from "@/Layouts/Footer.vue";
 
-// Declaramos las señales que el Layout va a pasar hacia arriba
+
 const emit = defineEmits(['open-login', 'open-register']);
 </script>
 
